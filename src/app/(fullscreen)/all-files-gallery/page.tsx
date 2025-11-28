@@ -221,6 +221,93 @@ const customScrollbarStyle = `
   .line-share-btn:hover {
     background: linear-gradient(135deg, #00C300 0%, #00D400 100%);
   }
+
+  /* Responsive Text Sizing */
+  .text-responsive-xs {
+    font-size: clamp(0.625rem, 2vw, 0.75rem);
+  }
+
+  .text-responsive-sm {
+    font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+  }
+
+  .text-responsive-base {
+    font-size: clamp(0.875rem, 3vw, 1rem);
+  }
+
+  .text-responsive-lg {
+    font-size: clamp(1rem, 3.5vw, 1.125rem);
+  }
+
+  .text-responsive-xl {
+    font-size: clamp(1.125rem, 4vw, 1.25rem);
+  }
+
+  .text-responsive-2xl {
+    font-size: clamp(1.25rem, 4.5vw, 1.5rem);
+  }
+
+  .text-responsive-3xl {
+    font-size: clamp(1.5rem, 5vw, 1.875rem);
+  }
+
+  .text-responsive-4xl {
+    font-size: clamp(1.75rem, 5.5vw, 2.25rem);
+  }
+
+  .text-responsive-5xl {
+    font-size: clamp(2rem, 6vw, 3rem);
+  }
+
+  /* Folder card responsive text */
+  .folder-title {
+    font-size: clamp(0.875rem, 2.5vw + 0.25rem, 1.125rem);
+    line-height: 1.3;
+  }
+
+  .folder-description {
+    font-size: clamp(0.625rem, 2vw + 0.1rem, 0.875rem);
+    line-height: 1.4;
+  }
+
+  .folder-meta {
+    font-size: clamp(0.625rem, 1.5vw + 0.1rem, 0.75rem);
+  }
+
+  /* File card responsive text */
+  .file-title {
+    font-size: clamp(0.75rem, 2vw + 0.2rem, 1rem);
+    line-height: 1.3;
+  }
+
+  .file-meta {
+    font-size: clamp(0.625rem, 1.5vw + 0.1rem, 0.75rem);
+  }
+
+  .file-tag {
+    font-size: clamp(0.5rem, 1.5vw, 0.75rem);
+    padding: clamp(0.125rem, 0.5vw, 0.25rem) clamp(0.375rem, 1vw, 0.5rem);
+  }
+
+  /* Header responsive text */
+  .page-title {
+    font-size: clamp(1.5rem, 5vw + 0.5rem, 3rem);
+    line-height: 1.2;
+  }
+
+  .page-subtitle {
+    font-size: clamp(0.75rem, 2.5vw + 0.1rem, 1.125rem);
+  }
+
+  /* Button responsive text */
+  .btn-text {
+    font-size: clamp(0.75rem, 2vw + 0.1rem, 0.875rem);
+  }
+
+  /* Breadcrumb responsive text */
+  .breadcrumb-text {
+    font-size: clamp(0.625rem, 2vw, 0.875rem);
+  }
 `;
 
 // File interface - files will be stored in /public/marketing/
@@ -1580,10 +1667,10 @@ const AllFilesGalleryPage = () => {
                     <FolderOpen className="w-6 h-6 md:w-10 md:h-10 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400 animate-gradient-shift">
+                    <h1 className="page-title font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400 animate-gradient-shift">
                       รวม File ทั้งหมด
                     </h1>
-                    <p className="text-sm md:text-lg text-purple-200/80 mt-1">
+                    <p className="page-subtitle text-purple-200/80 mt-1">
                       📸 รูป • วิดีโอ • ไฟล์มีเดีย
                     </p>
                   </div>
@@ -1666,13 +1753,13 @@ const AllFilesGalleryPage = () => {
                       >
                         <Icon className="w-7 h-7 text-white drop-shadow-md" />
                       </div>
-                      <h3 className="text-lg font-bold text-white group-hover:text-purple-100 transition-colors">
+                      <h3 className="folder-title font-bold text-white group-hover:text-purple-100 transition-colors">
                         {folder.name}
                       </h3>
-                      <p className="text-sm text-purple-200/60 mt-1 line-clamp-2">
+                      <p className="folder-description text-purple-200/60 mt-1 line-clamp-2">
                         {folder.description}
                       </p>
-                      <div className="flex items-center justify-between text-xs mt-4 pt-3 border-t border-white/10">
+                      <div className="flex items-center justify-between folder-meta mt-4 pt-3 border-t border-white/10">
                         <span className="flex items-center gap-1.5 text-purple-200/70">
                           <FolderOpen className="w-3.5 h-3.5" />
                           {subFolderCount}
@@ -1746,21 +1833,21 @@ const AllFilesGalleryPage = () => {
                               })()}
                             </div>
                           )}
-                          <span className="text-sm">{item.name}</span>
+                          <span className="breadcrumb-text">{item.name}</span>
                         </button>
                       </div>
                     ))}
                   </div>
 
                   {/* Folder info */}
-                  <div className="flex items-center gap-4 text-sm text-purple-200/60">
-                    <span className="flex items-center gap-1.5">
-                      <FolderOpen className="w-4 h-4" />
+                  <div className="flex items-center gap-2 sm:gap-4 text-responsive-sm text-purple-200/60">
+                    <span className="flex items-center gap-1 sm:gap-1.5">
+                      <FolderOpen className="w-3 h-3 sm:w-4 sm:h-4" />
                       {displayFolders.length} โฟลเดอร์
                     </span>
                     {canUploadFiles && currentNestedFolder && (
-                      <span className="flex items-center gap-1.5">
-                        <FileVideo className="w-4 h-4" />
+                      <span className="flex items-center gap-1 sm:gap-1.5">
+                        <FileVideo className="w-3 h-3 sm:w-4 sm:h-4" />
                         {currentNestedFolder.fileIds.length} ไฟล์
                       </span>
                     )}
@@ -1777,9 +1864,9 @@ const AllFilesGalleryPage = () => {
                     setEditingSubFolderId(null);
                     setEditingSubFolderValue("");
                   }}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all duration-200"
+                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl btn-text font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all duration-200"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   {isCreatingSubFolder ? "ยกเลิก" : "สร้างโฟลเดอร์"}
                 </button>
               </div>
@@ -1883,10 +1970,10 @@ const AllFilesGalleryPage = () => {
                                 <FolderOpen className="w-5 h-5 text-white" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <div className="text-white font-semibold truncate group-hover:text-purple-100 transition-colors">
+                                <div className="folder-title text-white font-semibold truncate group-hover:text-purple-100 transition-colors">
                                   {subFolder.name}
                                 </div>
-                                <div className="flex items-center gap-3 text-xs text-purple-200/60 mt-1">
+                                <div className="flex items-center gap-2 sm:gap-3 folder-meta text-purple-200/60 mt-1">
                                   {hasChildren && (
                                     <span className="flex items-center gap-1">
                                       <FolderOpen className="w-3 h-3" />
@@ -1902,16 +1989,16 @@ const AllFilesGalleryPage = () => {
                                 </div>
                               </div>
                             </div>
-                            <div className="flex items-center justify-between pt-3 mt-3 border-t border-white/10">
+                            <div className="flex items-center justify-between pt-2 sm:pt-3 mt-2 sm:mt-3 border-t border-white/10">
                               <div className="flex items-center gap-1">
                                 {isLeaf ? (
-                                  <span className="text-xs text-emerald-300/70 flex items-center gap-1">
-                                    <Check className="w-3 h-3" />
+                                  <span className="folder-meta text-emerald-300/70 flex items-center gap-1">
+                                    <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                     อัพโหลดได้
                                   </span>
                                 ) : (
-                                  <span className="text-xs text-purple-200/50 flex items-center gap-1">
-                                    <ChevronRight className="w-3 h-3" />
+                                  <span className="folder-meta text-purple-200/50 flex items-center gap-1">
+                                    <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                     คลิกเพื่อเข้า
                                   </span>
                                 )}
@@ -1976,10 +2063,10 @@ const AllFilesGalleryPage = () => {
                   <Wand2 className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-center md:text-left">
-                  <p className={`font-semibold transition-colors ${aiDragOver ? 'text-emerald-300' : 'text-white'}`}>
+                  <p className={`text-responsive-base font-semibold transition-colors ${aiDragOver ? 'text-emerald-300' : 'text-white'}`}>
                     {aiDragOver ? '📥 วางไฟล์ที่นี่!' : '🎬 AI Video Production'}
                   </p>
-                  <p className="text-sm text-purple-200/60">
+                  <p className="text-responsive-sm text-purple-200/60">
                     {aiDragOver ? 'ปล่อยเพื่อเริ่มสร้างวิดีโอ' : 'ลากไฟล์มาที่นี่เพื่อสร้างวิดีโอด้วย AI'}
                   </p>
                 </div>
@@ -2312,7 +2399,7 @@ const AllFilesGalleryPage = () => {
             </div>
 
             {/* Results Info */}
-            <div className="mt-3 md:mt-4 flex items-center justify-between text-xs md:text-sm text-purple-200/60">
+            <div className="mt-3 md:mt-4 flex items-center justify-between text-responsive-sm text-purple-200/60">
               <span>
                 แสดง {filteredFiles.length} จาก {files.length} ไฟล์
               </span>
@@ -2689,18 +2776,18 @@ const AllFilesGalleryPage = () => {
                   </div>
 
                   {/* Info Section */}
-                  <div className="p-4 space-y-3">
+                  <div className="p-2.5 sm:p-4 space-y-2 sm:space-y-3">
                     {/* File Name */}
-                    <h3 className="font-semibold text-white truncate group-hover:text-purple-300 transition-colors">
+                    <h3 className="file-title font-semibold text-white truncate group-hover:text-purple-300 transition-colors">
                       {file.name}
                     </h3>
 
                     {/* Tags */}
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1">
                       {file.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-0.5 bg-purple-500/20 text-purple-300 text-xs rounded-full hover:bg-purple-500/30 cursor-pointer transition-colors"
+                          className="file-tag bg-purple-500/20 text-purple-300 rounded-full hover:bg-purple-500/30 cursor-pointer transition-colors"
                         >
                           #{tag}
                         </span>
@@ -2708,25 +2795,25 @@ const AllFilesGalleryPage = () => {
                     </div>
 
                     {/* Meta Info */}
-                    <div className="flex items-center justify-between text-xs text-purple-200/60">
-                      <div className="flex items-center gap-3">
-                        <span className="flex items-center gap-1">
-                          <Eye className="w-3.5 h-3.5" />
+                    <div className="flex items-center justify-between file-meta text-purple-200/60">
+                      <div className="flex items-center gap-1.5 sm:gap-3">
+                        <span className="flex items-center gap-0.5 sm:gap-1">
+                          <Eye className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
                           {formatNumber(file.views)}
                         </span>
-                        <span className="flex items-center gap-1">
-                          <HardDrive className="w-3.5 h-3.5" />
+                        <span className="flex items-center gap-0.5 sm:gap-1">
+                          <HardDrive className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
                           {file.size}
                         </span>
                       </div>
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5" />
+                      <span className="flex items-center gap-0.5 sm:gap-1">
+                        <Calendar className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
                         {file.date}
                       </span>
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex items-center gap-2 pt-2 file-actions">
+                    <div className="flex items-center gap-1.5 sm:gap-2 pt-1.5 sm:pt-2 file-actions">
                       {/* Share Button (was Save) */}
                       <button
                         onClick={(e) => {
@@ -2734,19 +2821,19 @@ const AllFilesGalleryPage = () => {
                           setShareFileId(file.id);
                           setShowShareModal(true);
                         }}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl transition-all mobile-touch-target bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-400 hover:to-emerald-400"
+                        className="flex-1 flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all mobile-touch-target bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-400 hover:to-emerald-400"
                       >
-                        <Share2 className="w-4 h-4" />
-                        <span className="text-xs font-medium hidden sm:inline">
+                        <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="btn-text font-medium hidden sm:inline">
                           Share
                         </span>
                       </button>
                       {/* Download Button */}
                       <button
                         onClick={(e) => e.stopPropagation()}
-                        className="p-2 rounded-xl bg-white/10 text-purple-300 hover:bg-white/20 transition-colors mobile-touch-target"
+                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/10 text-purple-300 hover:bg-white/20 transition-colors mobile-touch-target"
                       >
-                        <Download className="w-4 h-4" />
+                        <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                       </button>
                       {/* Delete Button (was Share/LINE) */}
                       <button
@@ -2754,10 +2841,10 @@ const AllFilesGalleryPage = () => {
                           e.stopPropagation();
                           handleDeleteFile(file.id);
                         }}
-                        className="p-2 rounded-xl bg-white/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors mobile-touch-target"
+                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors mobile-touch-target"
                         title="ลบไฟล์"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                       </button>
                     </div>
                   </div>
