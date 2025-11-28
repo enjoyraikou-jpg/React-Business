@@ -1895,19 +1895,19 @@ const AllFilesGalleryPage = () => {
               {/* Nested Folders Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
                 {displayFolders.length === 0 ? (
-                  <div className="glass-card rounded-2xl p-8 border-2 border-dashed border-purple-400/30 text-center col-span-full">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
-                      <FolderOpen className="w-8 h-8 text-purple-300/70" />
+                  <div className="glass-card rounded-2xl p-4 sm:p-8 border-2 border-dashed border-purple-400/30 text-center col-span-full">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-xl sm:rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                      <FolderOpen className="w-6 h-6 sm:w-8 sm:h-8 text-purple-300/70" />
                     </div>
                     {canUploadFiles ? (
                       <>
-                        <p className="text-purple-200/70 text-sm">นี่คือโฟลเดอร์ปลายทาง</p>
-                        <p className="text-emerald-300/70 text-xs mt-1">✓ สามารถอัพโหลดไฟล์ได้ที่นี่</p>
+                        <p className="text-purple-200/70 text-responsive-sm">นี่คือโฟลเดอร์ปลายทาง</p>
+                        <p className="text-emerald-300/70 text-responsive-xs mt-1">✓ สามารถอัพโหลดไฟล์ได้ที่นี่</p>
                       </>
                     ) : (
                       <>
-                        <p className="text-purple-200/70 text-sm">ยังไม่มีโฟลเดอร์ย่อย</p>
-                        <p className="text-purple-300/50 text-xs mt-1">คลิก "สร้างโฟลเดอร์" เพื่อเริ่มต้น</p>
+                        <p className="text-purple-200/70 text-responsive-sm">ยังไม่มีโฟลเดอร์ย่อย</p>
+                        <p className="text-purple-300/50 text-responsive-xs mt-1">คลิก "สร้างโฟลเดอร์" เพื่อเริ่มต้น</p>
                       </>
                     )}
                   </div>
@@ -2035,12 +2035,12 @@ const AllFilesGalleryPage = () => {
               </div>
             </div>
           ) : (
-            <div className="glass-card rounded-2xl p-8 mb-8 text-center border border-white/10">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
-                <FolderOpen className="w-10 h-10 text-purple-300/70" />
+            <div className="glass-card rounded-2xl p-4 sm:p-8 mb-6 sm:mb-8 text-center border border-white/10">
+              <div className="w-14 h-14 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 rounded-xl sm:rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                <FolderOpen className="w-7 h-7 sm:w-10 sm:h-10 text-purple-300/70" />
               </div>
-              <p className="text-purple-200/80 text-base font-medium">เลือกโฟลเดอร์ด้านบน</p>
-              <p className="text-purple-300/50 text-sm mt-1">เพื่อจัดการโฟลเดอร์ย่อยและแสดงไฟล์เฉพาะหมวดนั้น</p>
+              <p className="text-purple-200/80 text-responsive-base font-medium">เลือกโฟลเดอร์ด้านบน</p>
+              <p className="text-purple-300/50 text-responsive-sm mt-1">เพื่อจัดการโฟลเดอร์ย่อยและแสดงไฟล์เฉพาะหมวดนั้น</p>
             </div>
           )}
 
