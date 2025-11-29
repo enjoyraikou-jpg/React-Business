@@ -104,8 +104,13 @@ const customScrollbarStyle = `
   }
 
   @keyframes slide-up {
-    from { transform: translateY(30px); opacity: 0; }
+    from { transform: translateY(100%); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes slide-down {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(100%); opacity: 0; }
   }
 
   @keyframes rotate-3d {
@@ -121,7 +126,8 @@ const customScrollbarStyle = `
   }
   .animate-shimmer { animation: shimmer 2s infinite; }
   .animate-bounce-in { animation: bounce-in 0.5s ease-out forwards; }
-  .animate-slide-up { animation: slide-up 0.6s ease-out forwards; }
+  .animate-slide-up { animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .animate-slide-down { animation: slide-down 0.3s ease-in forwards; }
 
   .glass-effect {
     background: rgba(255, 255, 255, 0.1);
@@ -577,7 +583,7 @@ const AllFilesGalleryPage = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareFileId, setShareFileId] = useState<number | null>(null);
   const [isGlobalDropActive, setIsGlobalDropActive] = useState(false);
-  
+
   // Confirmation modal state
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
@@ -594,9 +600,9 @@ const AllFilesGalleryPage = () => {
     type: 'delete',
     title: '',
     message: '',
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const isMountedRef = useRef(true);
@@ -1781,180 +1787,176 @@ const AllFilesGalleryPage = () => {
             </div>
           </div>
 
-          {/* Folder Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-5 mb-6 md:mb-8">
-            {folders.map((folder, index) => {
-              const Icon = folder.icon;
-              const isActive = activeFolderId === folder.id;
-              const fileCount = getFolderFileCount(folder);
-              const subFolderCount = folder.subFolders.length;
-              const isEditing = editingFolderId === folder.id;
-              const isDragOver = dragOverFolderId === folder.id;
+          {/* Folder Grid - Only show when no folder is selected */}
+          {!activeFolder && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 sm:gap-3 md:gap-5 mb-6 md:mb-8">
+              {folders.map((folder, index) => {
+                const Icon = folder.icon;
+                const isActive = activeFolderId === folder.id;
+                const fileCount = getFolderFileCount(folder);
+                const subFolderCount = folder.subFolders.length;
+                const isEditing = editingFolderId === folder.id;
+                const isDragOver = dragOverFolderId === folder.id;
 
-              return (
-                <div
-                  key={folder.id}
-                  onDragOver={(e) => handleDragOver(e, folder.id)}
-                  onDragLeave={handleDragLeave}
-                  onDrop={(e) => void handleDropOnFolder(e, folder.id)}
-                  className={`group relative glass-card rounded-2xl p-5 text-left transition-all duration-300 hover:scale-[1.03] border overflow-hidden animate-slide-up ${isActive
-                    ? "border-purple-400/80 shadow-lg shadow-purple-500/30 ring-2 ring-purple-400/50"
-                    : isDragOver
-                      ? "border-emerald-400/80 shadow-lg shadow-emerald-500/30 ring-2 ring-emerald-400/50 scale-105"
-                      : "border-white/10 hover:border-purple-300/50 hover:shadow-lg hover:shadow-purple-500/20"
-                    }`}
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                >
-                  {/* Drop indicator overlay */}
-                  {isDragOver && (
-                    <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center z-30 rounded-2xl">
-                      <div className="text-emerald-300 font-semibold text-sm flex items-center gap-2">
-                        <Upload className="w-5 h-5" />
-                        วางไฟล์ที่นี่
+                return (
+                  <div
+                    key={folder.id}
+                    onDragOver={(e) => handleDragOver(e, folder.id)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => void handleDropOnFolder(e, folder.id)}
+                    className={`group relative glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 text-left transition-all duration-300 hover:scale-[1.03] border overflow-hidden animate-slide-up ${isActive
+                      ? "border-purple-400/80 shadow-lg shadow-purple-500/30 ring-2 ring-purple-400/50"
+                      : isDragOver
+                        ? "border-emerald-400/80 shadow-lg shadow-emerald-500/30 ring-2 ring-emerald-400/50 scale-105"
+                        : "border-white/10 hover:border-purple-300/50 hover:shadow-lg hover:shadow-purple-500/20"
+                      }`}
+                    style={{ animationDelay: `${index * 0.05}s` }}
+                  >
+                    {/* Drop indicator overlay */}
+                    {isDragOver && (
+                      <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center z-30 rounded-2xl">
+                        <div className="text-emerald-300 font-semibold text-sm flex items-center gap-2">
+                          <Upload className="w-5 h-5" />
+                          วางไฟล์ที่นี่
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Glow effect on hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${folder.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 ${isActive ? 'opacity-10' : ''}`} />
+                    {/* Glow effect on hover */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${folder.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 ${isActive ? 'opacity-10' : ''}`} />
 
-                  {isEditing ? (
-                    <div className="relative z-10 flex flex-col gap-3 h-full">
-                      <input
-                        type="text"
-                        value={editingFolderValue}
-                        onChange={(e) => setEditingFolderValue(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
-                        autoFocus
-                      />
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleSaveFolderName(folder.id)}
-                          className="flex-1 px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs font-medium shadow-lg hover:shadow-green-500/50 transition-all"
-                        >
-                          บันทึก
-                        </button>
-                        <button
-                          onClick={handleCancelEditFolder}
-                          className="flex-1 px-3 py-2 rounded-xl bg-white/10 text-purple-100 text-xs font-medium hover:bg-white/20 transition-all"
-                        >
-                          ยกเลิก
-                        </button>
+                    {isEditing ? (
+                      <div className="relative z-10 flex flex-col gap-3 h-full">
+                        <input
+                          type="text"
+                          value={editingFolderValue}
+                          onChange={(e) => setEditingFolderValue(e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                          autoFocus
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleSaveFolderName(folder.id)}
+                            className="flex-1 px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs font-medium shadow-lg hover:shadow-green-500/50 transition-all"
+                          >
+                            บันทึก
+                          </button>
+                          <button
+                            onClick={handleCancelEditFolder}
+                            className="flex-1 px-3 py-2 rounded-xl bg-white/10 text-purple-100 text-xs font-medium hover:bg-white/20 transition-all"
+                          >
+                            ยกเลิก
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div
-                      className="relative z-10 cursor-pointer"
-                      onClick={() => handleFolderSelect(folder.id)}
-                    >
+                    ) : (
                       <div
-                        className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${folder.gradient} flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 ${isActive ? 'scale-110 shadow-xl' : ''}`}
+                        className="relative z-10 cursor-pointer"
+                        onClick={() => handleFolderSelect(folder.id)}
                       >
-                        <Icon className="w-7 h-7 text-white drop-shadow-md" />
+                        <div
+                          className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${folder.gradient} flex items-center justify-center mb-2 sm:mb-3 md:mb-4 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 ${isActive ? 'scale-110 shadow-xl' : ''}`}
+                        >
+                          <Icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white drop-shadow-md" />
+                        </div>
+                        <h3 className="folder-title font-bold text-white group-hover:text-purple-100 transition-colors text-sm sm:text-base">
+                          {folder.name}
+                        </h3>
+                        <p className="folder-description text-purple-200/60 mt-0.5 sm:mt-1 line-clamp-2 text-xs sm:text-sm hidden sm:block">
+                          {folder.description}
+                        </p>
+                        <div className="flex items-center justify-between folder-meta mt-2 sm:mt-3 md:mt-4 pt-2 sm:pt-3 border-t border-white/10 text-xs sm:text-sm">
+                          <span className="flex items-center gap-1 sm:gap-1.5 text-purple-200/70">
+                            <FolderOpen className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                            {subFolderCount}
+                          </span>
+                          <span className="flex items-center gap-1 sm:gap-1.5 text-purple-200/70">
+                            <FileVideo className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                            {fileCount}
+                          </span>
+                        </div>
                       </div>
-                      <h3 className="folder-title font-bold text-white group-hover:text-purple-100 transition-colors">
-                        {folder.name}
-                      </h3>
-                      <p className="folder-description text-purple-200/60 mt-1 line-clamp-2">
-                        {folder.description}
-                      </p>
-                      <div className="flex items-center justify-between folder-meta mt-4 pt-3 border-t border-white/10">
-                        <span className="flex items-center gap-1.5 text-purple-200/70">
-                          <FolderOpen className="w-3.5 h-3.5" />
-                          {subFolderCount}
-                        </span>
-                        <span className="flex items-center gap-1.5 text-purple-200/70">
-                          <FileVideo className="w-3.5 h-3.5" />
-                          {fileCount}
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Edit & Delete buttons - show on hover */}
-                  {!isEditing && (
-                    <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleStartEditFolder(folder);
-                        }}
-                        className="p-1.5 rounded-lg bg-white/20 text-purple-100 hover:bg-white/30 hover:text-white transition-all"
-                        title="แก้ไขชื่อ"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteFolder(folder.id);
-                        }}
-                        className="p-1.5 rounded-lg bg-white/20 text-red-300 hover:bg-red-500/30 hover:text-red-200 transition-all"
-                        title="ลบโฟลเดอร์"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  )}
+                    {/* Active indicator */}
+                    {isActive && !isEditing && (
+                      <div className="absolute bottom-2 right-2 w-3 h-3 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 animate-pulse shadow-lg shadow-purple-500/50" />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
-                  {/* Active indicator */}
-                  {isActive && !isEditing && (
-                    <div className="absolute bottom-2 right-2 w-3 h-3 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 animate-pulse shadow-lg shadow-purple-500/50" />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {activeFolder ? (
+          {activeFolder && (
             <div className="mb-8 space-y-5">
-              {/* Breadcrumb Navigation */}
-              <div className="glass-card rounded-2xl p-4 shadow-lg">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-2 flex-wrap">
+              {/* Selected Folder Header Card */}
+              <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-purple-400/50 shadow-lg shadow-purple-500/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    {/* Back button */}
+                    <button
+                      onClick={() => {
+                        setActiveFolderId(null);
+                        setFolderPath([]);
+                      }}
+                      className="p-2 sm:p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all"
+                    >
+                      <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
+
+                    {/* Folder icon and info */}
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${activeFolder.gradient} flex items-center justify-center shadow-lg`}>
+                        {(() => {
+                          const Icon = activeFolder.icon;
+                          return <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />;
+                        })()}
+                      </div>
+                      <div>
+                        <h2 className="text-lg sm:text-xl font-bold text-white">{activeFolder.name}</h2>
+                        <p className="text-purple-200/60 text-sm hidden sm:block">{activeFolder.description}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Folder stats */}
+                  <div className="flex items-center gap-3 sm:gap-4 text-sm text-purple-200/60">
+                    <span className="flex items-center gap-1.5">
+                      <FolderOpen className="w-4 h-4" />
+                      {displayFolders.length}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <FileVideo className="w-4 h-4" />
+                      {currentNestedFolder?.fileIds.length || 0}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Breadcrumb - show only if nested */}
+                {breadcrumbItems.length > 1 && (
+                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10 flex-wrap">
                     {breadcrumbItems.map((item, index) => (
                       <div key={item.id} className="flex items-center gap-2">
                         {index > 0 && (
-                          <ChevronRight className="w-4 h-4 text-purple-300/50" />
+                          <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 text-purple-300/50" />
                         )}
                         <button
                           onClick={() => handleBreadcrumbClick(index)}
-                          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all ${index === breadcrumbItems.length - 1
-                            ? "bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white font-semibold"
-                            : "text-purple-200/70 hover:text-white hover:bg-white/10"
+                          className={`px-2 sm:px-3 py-1 rounded-lg text-sm transition-all ${index === breadcrumbItems.length - 1
+                              ? "bg-purple-500/30 text-white font-medium"
+                              : "text-purple-200/70 hover:text-white hover:bg-white/10"
                             }`}
                         >
-                          {item.isRoot && (
-                            <div className={`w-6 h-6 rounded-lg bg-gradient-to-br ${activeFolder.gradient} flex items-center justify-center`}>
-                              {(() => {
-                                const Icon = activeFolder.icon;
-                                return <Icon className="w-3.5 h-3.5 text-white" />;
-                              })()}
-                            </div>
-                          )}
-                          <span className="breadcrumb-text">{item.name}</span>
+                          {item.name}
                         </button>
                       </div>
                     ))}
                   </div>
-
-                  {/* Folder info */}
-                  <div className="flex items-center gap-2 sm:gap-4 text-responsive-sm text-purple-200/60">
-                    <span className="flex items-center gap-1 sm:gap-1.5">
-                      <FolderOpen className="w-3 h-3 sm:w-4 sm:h-4" />
-                      {displayFolders.length} โฟลเดอร์
-                    </span>
-                    {canUploadFiles && currentNestedFolder && (
-                      <span className="flex items-center gap-1 sm:gap-1.5">
-                        <FileVideo className="w-3 h-3 sm:w-4 sm:h-4" />
-                        {currentNestedFolder.fileIds.length} ไฟล์
-                      </span>
-                    )}
-                  </div>
-                </div>
+                )}
               </div>
 
-              {/* Action Buttons - Create Folder & Upload */}
+              {/* Action Buttons - Upload & Create Folder */}
               <div className="flex justify-end gap-2 sm:gap-3">
                 {/* Upload Button */}
                 <button
@@ -1964,7 +1966,7 @@ const AllFilesGalleryPage = () => {
                   <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   อัพโหลด
                 </button>
-                
+
                 {/* Create Folder Button */}
                 <button
                   onClick={() => {
@@ -2142,50 +2144,6 @@ const AllFilesGalleryPage = () => {
                       </div>
                     );
                   })
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="glass-card rounded-2xl p-4 sm:p-8 mb-6 sm:mb-8 text-center border border-white/10">
-              <div className="w-14 h-14 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 rounded-xl sm:rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
-                <FolderOpen className="w-7 h-7 sm:w-10 sm:h-10 text-purple-300/70" />
-              </div>
-              <p className="text-purple-200/80 text-responsive-base font-medium">เลือกโฟลเดอร์ด้านบน</p>
-              <p className="text-purple-300/50 text-responsive-sm mt-1">เพื่อจัดการโฟลเดอร์ย่อยและแสดงไฟล์เฉพาะหมวดนั้น</p>
-            </div>
-          )}
-
-          {/* AI Video Production Drop Zone */}
-          {showAIDropZone && (
-            <div
-              onDragOver={handleAIDragOver}
-              onDragLeave={handleAIDragLeave}
-              onDrop={handleAIDrop}
-              className={`glass-card rounded-2xl p-4 mb-6 border-2 border-dashed transition-all duration-300 ${aiDragOver
-                ? 'ai-drop-zone-active border-emerald-400'
-                : 'ai-drop-zone border-purple-400/50'
-                }`}
-            >
-              <div className="flex items-center justify-center gap-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${aiDragOver
-                  ? 'bg-gradient-to-br from-emerald-500 to-green-600'
-                  : 'bg-gradient-to-br from-purple-500 to-pink-500'
-                  }`}>
-                  <Wand2 className="w-6 h-6 text-white" />
-                </div>
-                <div className="text-center md:text-left">
-                  <p className={`text-responsive-base font-semibold transition-colors ${aiDragOver ? 'text-emerald-300' : 'text-white'}`}>
-                    {aiDragOver ? '📥 วางไฟล์ที่นี่!' : '🎬 AI Video Production'}
-                  </p>
-                  <p className="text-responsive-sm text-purple-200/60">
-                    {aiDragOver ? 'ปล่อยเพื่อเริ่มสร้างวิดีโอ' : 'ลากไฟล์มาที่นี่เพื่อสร้างวิดีโอด้วย AI'}
-                  </p>
-                </div>
-                {aiProcessingFiles.length > 0 && (
-                  <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-purple-500/20 rounded-xl">
-                    <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 text-purple-300 animate-spin" />
-                    <span className="text-responsive-sm text-purple-200">กำลังประมวลผล {aiProcessingFiles.length} ไฟล์...</span>
-                  </div>
                 )}
               </div>
             </div>
@@ -2515,70 +2473,140 @@ const AllFilesGalleryPage = () => {
             </div>
           </div>
 
-          {/* Mobile Upload Modal */}
+          {/* Mobile Upload Modal - Enhanced for Android & iPhone */}
           {showUploadModal && (
-            <div className="fixed inset-0 z-50 bg-black/80 flex items-end md:items-center justify-center p-4">
-              <div className="w-full max-w-md bg-slate-900 rounded-t-3xl md:rounded-3xl p-4 sm:p-6 space-y-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-responsive-xl font-bold text-white">อัพโหลดไฟล์</h3>
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center">
+              <div
+                className="w-full max-w-lg bg-gradient-to-b from-slate-800 to-slate-900 rounded-t-[2rem] sm:rounded-3xl overflow-hidden shadow-2xl animate-slide-up sm:animate-bounce-in sm:mx-4"
+                style={{ maxHeight: '90vh' }}
+              >
+                {/* Header with gradient */}
+                <div className="relative bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 p-5 sm:p-6">
+                  {/* Close button */}
                   <button
                     onClick={() => setShowUploadModal(false)}
-                    className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
+                    className="absolute top-4 right-4 p-2 rounded-full bg-white/20 text-white hover:bg-white/30 active:scale-95 transition-all"
                   >
                     <X className="w-5 h-5" />
                   </button>
+
+                  {/* Title */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+                      <Upload className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl sm:text-2xl font-bold text-white">อัพโหลดไฟล์</h3>
+                      <p className="text-white/70 text-sm">เลือกวิธีการอัพโหลด</p>
+                    </div>
+                  </div>
+
+                  {/* Drag indicator for mobile sheet */}
+                  <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-white/30 sm:hidden" />
                 </div>
 
-                {/* Hidden file inputs */}
+                {/* Hidden file inputs - Enhanced for mobile */}
                 <input
                   ref={fileInputRef}
                   type="file"
                   multiple
-                  accept="image/*,video/*"
+                  accept="image/*,video/*,.jpg,.jpeg,.png,.gif,.webp,.mp4,.mov,.avi,.webm"
                   onChange={handleFileUpload}
                   className="hidden"
                 />
                 <input
                   ref={cameraInputRef}
                   type="file"
-                  accept="image/*,video/*"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                {/* Video capture input for mobile */}
+                <input
+                  id="videoCaptureInput"
+                  type="file"
+                  accept="video/*"
                   capture="environment"
                   onChange={handleFileUpload}
                   className="hidden"
                 />
 
-                {/* Upload options */}
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 hover:border-purple-400/50 transition-all"
-                  >
-                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                      <FolderOpen className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
-                    </div>
-                    <div className="text-center">
-                      <p className="text-white font-semibold text-responsive-base">เลือกไฟล์</p>
-                      <p className="text-responsive-xs text-purple-200/60">จากอุปกรณ์</p>
-                    </div>
-                  </button>
+                {/* Upload options content */}
+                <div className="p-4 sm:p-6 space-y-4 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 120px)' }}>
 
-                  <button
-                    onClick={() => cameraInputRef.current?.click()}
-                    className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 hover:border-cyan-400/50 transition-all"
-                  >
-                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
-                      <Camera className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
+                  {/* Upload options - Large touch targets */}
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                    {/* Gallery / Files */}
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="group flex flex-col items-center gap-3 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-2 border-purple-500/20 hover:border-purple-400/50 hover:from-purple-500/20 hover:to-pink-500/20 active:scale-[0.98] transition-all duration-200"
+                    >
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:shadow-purple-500/50 group-hover:scale-105 transition-all">
+                        <ImageIcon className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-white font-semibold text-base sm:text-lg">แกลเลอรี่</p>
+                        <p className="text-xs sm:text-sm text-purple-200/60 mt-0.5">เลือกรูป/วิดีโอ</p>
+                      </div>
+                    </button>
+
+                    {/* Browse Files */}
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="group flex flex-col items-center gap-3 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border-2 border-emerald-500/20 hover:border-emerald-400/50 hover:from-emerald-500/20 hover:to-teal-500/20 active:scale-[0.98] transition-all duration-200"
+                    >
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:shadow-emerald-500/50 group-hover:scale-105 transition-all">
+                        <FolderOpen className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-white font-semibold text-base sm:text-lg">ไฟล์อื่นๆ</p>
+                        <p className="text-xs sm:text-sm text-emerald-200/60 mt-0.5">เลือกจากโฟลเดอร์</p>
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Drag & Drop area - Desktop only */}
+                  <div className="hidden sm:block">
+                    <div
+                      className="relative p-6 border-2 border-dashed border-purple-500/30 rounded-2xl bg-purple-500/5 hover:border-purple-400/50 hover:bg-purple-500/10 transition-all cursor-pointer group"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <div className="flex flex-col items-center gap-3 text-center">
+                        <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Upload className="w-6 h-6 text-purple-400" />
+                        </div>
+                        <div>
+                          <p className="text-purple-200 font-medium">ลากไฟล์มาวางที่นี่</p>
+                          <p className="text-purple-300/50 text-sm mt-1">หรือคลิกเพื่อเลือกไฟล์</p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-center">
-                      <p className="text-white font-semibold text-responsive-base">ถ่ายรูป/วิดีโอ</p>
-                      <p className="text-responsive-xs text-purple-200/60">จากกล้อง</p>
+                  </div>
+
+                  {/* Supported formats info */}
+                  <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                    <span className="text-purple-300/50 text-xs">รองรับ:</span>
+                    <span className="px-2 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs">JPG</span>
+                    <span className="px-2 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs">PNG</span>
+                    <span className="px-2 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs">GIF</span>
+                    <span className="px-2 py-1 rounded-full bg-pink-500/20 text-pink-300 text-xs">MP4</span>
+                    <span className="px-2 py-1 rounded-full bg-pink-500/20 text-pink-300 text-xs">MOV</span>
+                  </div>
+
+                  {/* Current folder indicator */}
+                  {(currentNestedFolder || activeFolder) && (
+                    <div className="flex items-center justify-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                      <FolderOpen className="w-4 h-4 text-emerald-400" />
+                      <span className="text-emerald-300 text-sm">
+                        อัพโหลดไปที่: <span className="font-medium">{currentNestedFolder?.name || activeFolder?.name}</span>
+                      </span>
                     </div>
-                  </button>
+                  )}
                 </div>
 
-                <p className="text-center text-responsive-sm text-purple-200/50 pt-2">
-                  รองรับไฟล์: รูปภาพ และ วิดีโอ
-                </p>
+                {/* Bottom safe area for mobile */}
+                <div className="h-6 sm:h-4 bg-slate-900" />
               </div>
             </div>
           )}
@@ -2587,7 +2615,7 @@ const AllFilesGalleryPage = () => {
           {confirmModal.isOpen && (
             <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
               {/* Backdrop */}
-              <div 
+              <div
                 className="absolute inset-0 bg-black/70 backdrop-blur-sm"
                 onClick={() => {
                   if (confirmModal.onCancel) {
@@ -2596,26 +2624,24 @@ const AllFilesGalleryPage = () => {
                   closeConfirmModal();
                 }}
               />
-              
+
               {/* Modal Content */}
               <div className="relative w-full max-w-md transform transition-all animate-bounce-in">
                 <div className="glass-card rounded-2xl sm:rounded-3xl overflow-hidden border border-white/20 shadow-2xl">
                   {/* Header with icon */}
-                  <div className={`p-6 sm:p-8 text-center ${
-                    confirmModal.type === 'delete' 
-                      ? 'bg-gradient-to-br from-red-500/20 to-pink-500/20' 
-                      : confirmModal.type === 'warning'
+                  <div className={`p-6 sm:p-8 text-center ${confirmModal.type === 'delete'
+                    ? 'bg-gradient-to-br from-red-500/20 to-pink-500/20'
+                    : confirmModal.type === 'warning'
                       ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20'
                       : 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20'
-                  }`}>
+                    }`}>
                     {/* Icon */}
-                    <div className={`w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${
-                      confirmModal.type === 'delete'
-                        ? 'bg-gradient-to-br from-red-500 to-pink-600 shadow-lg shadow-red-500/40'
-                        : confirmModal.type === 'warning'
+                    <div className={`w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${confirmModal.type === 'delete'
+                      ? 'bg-gradient-to-br from-red-500 to-pink-600 shadow-lg shadow-red-500/40'
+                      : confirmModal.type === 'warning'
                         ? 'bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg shadow-amber-500/40'
                         : 'bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg shadow-blue-500/40'
-                    }`}>
+                      }`}>
                       {confirmModal.type === 'delete' ? (
                         <Trash2 className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                       ) : confirmModal.type === 'warning' ? (
@@ -2624,17 +2650,17 @@ const AllFilesGalleryPage = () => {
                         <Info className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                       )}
                     </div>
-                    
+
                     {/* Title */}
                     <h3 className="text-responsive-xl sm:text-2xl font-bold text-white mb-2">
                       {confirmModal.title}
                     </h3>
-                    
+
                     {/* Message */}
                     <p className="text-responsive-sm sm:text-base text-purple-200/80">
                       {confirmModal.message}
                     </p>
-                    
+
                     {/* Item name if provided */}
                     {confirmModal.itemName && (
                       <div className="mt-4 px-4 py-3 bg-white/10 rounded-xl border border-white/10">
@@ -2644,7 +2670,7 @@ const AllFilesGalleryPage = () => {
                         </p>
                       </div>
                     )}
-                    
+
                     {/* Warning note for delete */}
                     {confirmModal.type === 'delete' && (
                       <div className="mt-4 flex items-center justify-center gap-2 text-red-300/80">
@@ -2653,7 +2679,7 @@ const AllFilesGalleryPage = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   {/* Action Buttons */}
                   <div className="p-4 sm:p-6 bg-slate-900/50 flex flex-col-reverse sm:flex-row gap-3">
                     {confirmModal.cancelText && (
@@ -2671,13 +2697,12 @@ const AllFilesGalleryPage = () => {
                     )}
                     <button
                       onClick={() => confirmModal.onConfirm()}
-                      className={`flex-1 px-6 py-3 sm:py-3.5 rounded-xl font-medium transition-all duration-200 btn-text shadow-lg ${
-                        confirmModal.type === 'delete'
-                          ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-400 hover:to-pink-500 text-white shadow-red-500/30 hover:shadow-red-500/50'
-                          : confirmModal.type === 'warning'
+                      className={`flex-1 px-6 py-3 sm:py-3.5 rounded-xl font-medium transition-all duration-200 btn-text shadow-lg ${confirmModal.type === 'delete'
+                        ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-400 hover:to-pink-500 text-white shadow-red-500/30 hover:shadow-red-500/50'
+                        : confirmModal.type === 'warning'
                           ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white shadow-amber-500/30 hover:shadow-amber-500/50'
                           : 'bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-400 hover:to-cyan-500 text-white shadow-blue-500/30 hover:shadow-blue-500/50'
-                      }`}
+                        }`}
                     >
                       {confirmModal.confirmText || 'ยืนยัน'}
                     </button>
@@ -3151,53 +3176,51 @@ const AllFilesGalleryPage = () => {
             </div>
           )}
 
-          {/* Mobile Floating Action Button */}
-          {isMobile && (
-            <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
-              {/* Selected files actions */}
-              {selectedFiles.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <button
-                    onClick={() => {
-                      // Share all selected files
-                      if (selectedFiles.length === 1) {
-                        setShareFileId(selectedFiles[0]);
-                        setShowShareModal(true);
-                      } else {
-                        shareToLine(selectedFiles[0]);
-                      }
-                    }}
-                    className="w-14 h-14 rounded-full line-share-btn text-white shadow-lg flex items-center justify-center"
-                  >
-                    <Send className="w-6 h-6" />
-                  </button>
-                  <button
-                    onClick={() => {
-                      selectedFiles.forEach(id => {
-                        setAIProcessingFiles(prev => [...prev, id]);
-                      });
-                      setTimeout(() => {
-                        alert(`🎬 AI Video Production started for ${selectedFiles.length} files!`);
-                        setAIProcessingFiles([]);
-                        setSelectedFiles([]);
-                      }, 2000);
-                    }}
-                    className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg flex items-center justify-center"
-                  >
-                    <Wand2 className="w-6 h-6" />
-                  </button>
-                </div>
-              )}
+          {/* Floating Action Button - Always visible on mobile */}
+          <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col gap-2 sm:gap-3 md:hidden">
+            {/* Selected files actions */}
+            {selectedFiles.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => {
+                    // Share all selected files
+                    if (selectedFiles.length === 1) {
+                      setShareFileId(selectedFiles[0]);
+                      setShowShareModal(true);
+                    } else {
+                      shareToLine(selectedFiles[0]);
+                    }
+                  }}
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-full line-share-btn text-white shadow-lg flex items-center justify-center"
+                >
+                  <Send className="w-5 h-5 sm:w-6 sm:h-6" />
+                </button>
+                <button
+                  onClick={() => {
+                    selectedFiles.forEach(id => {
+                      setAIProcessingFiles(prev => [...prev, id]);
+                    });
+                    setTimeout(() => {
+                      alert(`🎬 AI Video Production started for ${selectedFiles.length} files!`);
+                      setAIProcessingFiles([]);
+                      setSelectedFiles([]);
+                    }, 2000);
+                  }}
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg flex items-center justify-center"
+                >
+                  <Wand2 className="w-5 h-5 sm:w-6 sm:h-6" />
+                </button>
+              </div>
+            )}
 
-              {/* Main upload FAB */}
-              <button
-                onClick={() => setShowUploadModal(true)}
-                className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 flex items-center justify-center"
-              >
-                <Plus className="w-8 h-8" />
-              </button>
-            </div>
-          )}
+            {/* Main upload FAB - prominent cyan button */}
+            <button
+              onClick={() => setShowUploadModal(true)}
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-xl shadow-blue-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+            >
+              <Plus className="w-7 h-7 sm:w-8 sm:h-8" />
+            </button>
+          </div>
         </div>
       </div>
     </>
