@@ -1954,8 +1954,18 @@ const AllFilesGalleryPage = () => {
                 </div>
               </div>
 
-              {/* Create Folder Button */}
-              <div className="flex justify-end">
+              {/* Action Buttons - Create Folder & Upload */}
+              <div className="flex justify-end gap-2 sm:gap-3">
+                {/* Upload Button */}
+                <button
+                  onClick={() => setShowUploadModal(true)}
+                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl btn-text font-semibold bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all duration-200"
+                >
+                  <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  อัพโหลด
+                </button>
+                
+                {/* Create Folder Button */}
                 <button
                   onClick={() => {
                     setIsCreatingSubFolder((prev) => !prev);
@@ -2480,13 +2490,6 @@ const AllFilesGalleryPage = () => {
                   </span>
                 </button>
               )}
-
-              <button
-                onClick={() => setShowUploadModal(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl transition-all shadow-lg">
-                <Upload className="w-4 h-4" />
-                <span className="font-medium">อัพโหลด</span>
-              </button>
 
               {/* Distribute Files Randomly Button */}
               <button
