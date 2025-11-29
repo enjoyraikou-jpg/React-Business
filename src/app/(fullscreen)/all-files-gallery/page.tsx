@@ -50,6 +50,8 @@ import {
   Wand2,
   Menu,
   ChevronDown,
+  AlertCircle,
+  Info,
 } from "lucide-react";
 import UserMenu from "@/components/UserMenu";
 
@@ -575,6 +577,26 @@ const AllFilesGalleryPage = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareFileId, setShareFileId] = useState<number | null>(null);
   const [isGlobalDropActive, setIsGlobalDropActive] = useState(false);
+  
+  // Confirmation modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    type: 'delete' | 'warning' | 'info';
+    title: string;
+    message: string;
+    itemName?: string;
+    onConfirm: () => void;
+    onCancel?: () => void;
+    confirmText?: string;
+    cancelText?: string;
+  }>({
+    isOpen: false,
+    type: 'delete',
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const isMountedRef = useRef(true);
@@ -945,40 +967,63 @@ const AllFilesGalleryPage = () => {
     if (!folderToDelete) return;
 
     if (folderToDelete.fileIds.length > 0 || folderToDelete.children.length > 0) {
-      alert("Remove all files and sub folders before deleting this folder.");
-      return;
-    }
-
-    if (!confirm(`Are you sure you want to delete "${folderToDelete.name}"?`)) return;
-
-    const targetPath = folderToDelete.relativePath;
-    if (!targetPath) {
-      alert("ไม่สามารถลบโฟลเดอร์นี้ได้ในขณะนี้");
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/marketing-folders", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: targetPath }),
+      showConfirmation({
+        type: 'warning',
+        title: 'ไม่สามารถลบได้',
+        message: 'กรุณาลบไฟล์และโฟลเดอร์ย่อยทั้งหมดก่อนลบโฟลเดอร์นี้',
+        confirmText: 'ตกลง',
+        onConfirm: closeConfirmModal,
       });
-
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        throw new Error(errorBody?.error || `ไม่สามารถลบโฟลเดอร์ได้ (รหัส ${response.status})`);
-      }
-
-      await loadMarketingFolders();
-      setFolderPath((prev) => prev.filter((id) => id !== subFolderId));
-    } catch (error) {
-      console.error("Failed to delete subfolder", error);
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("เกิดข้อผิดพลาดขณะลบโฟลเดอร์");
-      }
+      return;
     }
+
+    showConfirmation({
+      type: 'delete',
+      title: 'ยืนยันการลบโฟลเดอร์',
+      message: 'คุณต้องการลบโฟลเดอร์นี้หรือไม่?',
+      itemName: folderToDelete.name,
+      confirmText: 'ลบโฟลเดอร์',
+      cancelText: 'ยกเลิก',
+      onConfirm: async () => {
+        closeConfirmModal();
+        const targetPath = folderToDelete.relativePath;
+        if (!targetPath) {
+          showConfirmation({
+            type: 'warning',
+            title: 'เกิดข้อผิดพลาด',
+            message: 'ไม่สามารถลบโฟลเดอร์นี้ได้ในขณะนี้',
+            confirmText: 'ตกลง',
+            onConfirm: closeConfirmModal,
+          });
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/marketing-folders", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ path: targetPath }),
+          });
+
+          if (!response.ok) {
+            const errorBody = await response.json().catch(() => null);
+            throw new Error(errorBody?.error || `ไม่สามารถลบโฟลเดอร์ได้ (รหัส ${response.status})`);
+          }
+
+          await loadMarketingFolders();
+          setFolderPath((prev) => prev.filter((id) => id !== subFolderId));
+        } catch (error) {
+          console.error("Failed to delete subfolder", error);
+          showConfirmation({
+            type: 'warning',
+            title: 'เกิดข้อผิดพลาด',
+            message: error instanceof Error ? error.message : 'เกิดข้อผิดพลาดขณะลบโฟลเดอร์',
+            confirmText: 'ตกลง',
+            onConfirm: closeConfirmModal,
+          });
+        }
+      },
+    });
   };
 
   const handleStartEditSubFolder = (subFolder: NestedFolder) => {
@@ -1093,18 +1138,33 @@ const AllFilesGalleryPage = () => {
       folder.rootFileIds.length +
       folder.subFolders.reduce((acc, sub) => acc + getAllFileIds(sub).length, 0);
     if (totalFiles > 0) {
-      alert("Remove or reassign all files before deleting this folder.");
+      showConfirmation({
+        type: 'warning',
+        title: 'ไม่สามารถลบได้',
+        message: 'กรุณาย้ายหรือลบไฟล์ทั้งหมดก่อนลบโฟลเดอร์นี้',
+        confirmText: 'ตกลง',
+        onConfirm: closeConfirmModal,
+      });
       return;
     }
 
-    if (!confirm(`Are you sure you want to delete "${folder.name}"?`)) return;
+    showConfirmation({
+      type: 'delete',
+      title: 'ยืนยันการลบโฟลเดอร์',
+      message: 'คุณต้องการลบโฟลเดอร์นี้หรือไม่?',
+      itemName: folder.name,
+      confirmText: 'ลบโฟลเดอร์',
+      cancelText: 'ยกเลิก',
+      onConfirm: () => {
+        closeConfirmModal();
+        setFolders((prev) => prev.filter((f) => f.id !== folderId));
 
-    setFolders((prev) => prev.filter((f) => f.id !== folderId));
-
-    if (activeFolderId === folderId) {
-      setActiveFolderId(null);
-      setFolderPath([]);
-    }
+        if (activeFolderId === folderId) {
+          setActiveFolderId(null);
+          setFolderPath([]);
+        }
+      },
+    });
   };
 
   // Drag and drop handlers
@@ -1335,37 +1395,76 @@ const AllFilesGalleryPage = () => {
     );
   };
 
+  // Helper function to show confirmation modal
+  const showConfirmation = (options: {
+    type?: 'delete' | 'warning' | 'info';
+    title: string;
+    message: string;
+    itemName?: string;
+    onConfirm: () => void;
+    onCancel?: () => void;
+    confirmText?: string;
+    cancelText?: string;
+  }) => {
+    setConfirmModal({
+      isOpen: true,
+      type: options.type || 'delete',
+      title: options.title,
+      message: options.message,
+      itemName: options.itemName,
+      onConfirm: options.onConfirm,
+      onCancel: options.onCancel,
+      confirmText: options.confirmText,
+      cancelText: options.cancelText,
+    });
+  };
+
+  const closeConfirmModal = () => {
+    setConfirmModal(prev => ({ ...prev, isOpen: false }));
+  };
+
   // Delete file handler with confirmation
   const handleDeleteFile = async (fileId: number) => {
     const file = files.find(f => f.id === fileId);
     if (!file) return;
 
-    if (!confirm(`คุณต้องการลบไฟล์ "${file.name}" หรือไม่?\n\nการลบไม่สามารถกู้คืนได้`)) return;
+    showConfirmation({
+      type: 'delete',
+      title: 'ยืนยันการลบไฟล์',
+      message: 'คุณต้องการลบไฟล์นี้หรือไม่?',
+      itemName: file.name,
+      confirmText: 'ลบไฟล์',
+      cancelText: 'ยกเลิก',
+      onConfirm: async () => {
+        closeConfirmModal();
+        try {
+          const response = await fetch("/api/marketing-files", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filePath: file.url }),
+          });
 
-    try {
-      const response = await fetch("/api/marketing-files", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filePath: file.url }),
-      });
+          if (!response.ok) {
+            const errorBody = await response.json().catch(() => null);
+            throw new Error(
+              errorBody?.error || `ไม่สามารถลบไฟล์ได้ (รหัส ${response.status})`
+            );
+          }
 
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        throw new Error(
-          errorBody?.error || `ไม่สามารถลบไฟล์ได้ (รหัส ${response.status})`
-        );
-      }
-
-      await loadMarketingFolders();
-      setSelectedFiles((prev) => prev.filter((id) => id !== fileId));
-    } catch (error) {
-      console.error("Failed to delete file", error);
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("เกิดข้อผิดพลาดขณะลบไฟล์");
-      }
-    }
+          await loadMarketingFolders();
+          setSelectedFiles((prev) => prev.filter((id) => id !== fileId));
+        } catch (error) {
+          console.error("Failed to delete file", error);
+          showConfirmation({
+            type: 'warning',
+            title: 'เกิดข้อผิดพลาด',
+            message: error instanceof Error ? error.message : 'เกิดข้อผิดพลาดขณะลบไฟล์',
+            confirmText: 'ตกลง',
+            onConfirm: closeConfirmModal,
+          });
+        }
+      },
+    });
   };
 
   const toggleSelect = (id: number) => {
@@ -2477,6 +2576,110 @@ const AllFilesGalleryPage = () => {
                 <p className="text-center text-responsive-sm text-purple-200/50 pt-2">
                   รองรับไฟล์: รูปภาพ และ วิดีโอ
                 </p>
+              </div>
+            </div>
+          )}
+
+          {/* Confirmation Modal */}
+          {confirmModal.isOpen && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+              {/* Backdrop */}
+              <div 
+                className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                onClick={() => {
+                  if (confirmModal.onCancel) {
+                    confirmModal.onCancel();
+                  }
+                  closeConfirmModal();
+                }}
+              />
+              
+              {/* Modal Content */}
+              <div className="relative w-full max-w-md transform transition-all animate-bounce-in">
+                <div className="glass-card rounded-2xl sm:rounded-3xl overflow-hidden border border-white/20 shadow-2xl">
+                  {/* Header with icon */}
+                  <div className={`p-6 sm:p-8 text-center ${
+                    confirmModal.type === 'delete' 
+                      ? 'bg-gradient-to-br from-red-500/20 to-pink-500/20' 
+                      : confirmModal.type === 'warning'
+                      ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20'
+                      : 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20'
+                  }`}>
+                    {/* Icon */}
+                    <div className={`w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${
+                      confirmModal.type === 'delete'
+                        ? 'bg-gradient-to-br from-red-500 to-pink-600 shadow-lg shadow-red-500/40'
+                        : confirmModal.type === 'warning'
+                        ? 'bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg shadow-amber-500/40'
+                        : 'bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg shadow-blue-500/40'
+                    }`}>
+                      {confirmModal.type === 'delete' ? (
+                        <Trash2 className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                      ) : confirmModal.type === 'warning' ? (
+                        <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                      ) : (
+                        <Info className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                      )}
+                    </div>
+                    
+                    {/* Title */}
+                    <h3 className="text-responsive-xl sm:text-2xl font-bold text-white mb-2">
+                      {confirmModal.title}
+                    </h3>
+                    
+                    {/* Message */}
+                    <p className="text-responsive-sm sm:text-base text-purple-200/80">
+                      {confirmModal.message}
+                    </p>
+                    
+                    {/* Item name if provided */}
+                    {confirmModal.itemName && (
+                      <div className="mt-4 px-4 py-3 bg-white/10 rounded-xl border border-white/10">
+                        <p className="text-responsive-sm text-purple-300/60 mb-1">ชื่อไฟล์:</p>
+                        <p className="text-responsive-base text-white font-medium truncate">
+                          {confirmModal.itemName}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Warning note for delete */}
+                    {confirmModal.type === 'delete' && (
+                      <div className="mt-4 flex items-center justify-center gap-2 text-red-300/80">
+                        <AlertCircle className="w-4 h-4" />
+                        <span className="text-responsive-xs sm:text-sm">การดำเนินการนี้ไม่สามารถย้อนกลับได้</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="p-4 sm:p-6 bg-slate-900/50 flex flex-col-reverse sm:flex-row gap-3">
+                    {confirmModal.cancelText && (
+                      <button
+                        onClick={() => {
+                          if (confirmModal.onCancel) {
+                            confirmModal.onCancel();
+                          }
+                          closeConfirmModal();
+                        }}
+                        className="flex-1 px-6 py-3 sm:py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium transition-all duration-200 btn-text border border-white/10"
+                      >
+                        {confirmModal.cancelText}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => confirmModal.onConfirm()}
+                      className={`flex-1 px-6 py-3 sm:py-3.5 rounded-xl font-medium transition-all duration-200 btn-text shadow-lg ${
+                        confirmModal.type === 'delete'
+                          ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-400 hover:to-pink-500 text-white shadow-red-500/30 hover:shadow-red-500/50'
+                          : confirmModal.type === 'warning'
+                          ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white shadow-amber-500/30 hover:shadow-amber-500/50'
+                          : 'bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-400 hover:to-cyan-500 text-white shadow-blue-500/30 hover:shadow-blue-500/50'
+                      }`}
+                    >
+                      {confirmModal.confirmText || 'ยืนยัน'}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}
