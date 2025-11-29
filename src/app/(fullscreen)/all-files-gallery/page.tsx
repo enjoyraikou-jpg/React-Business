@@ -1615,7 +1615,7 @@ const AllFilesGalleryPage = () => {
       >
         {isGlobalDropActive && (
           <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 transition-opacity pointer-events-none">
-            <div className="px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-purple-700 to-blue-500 text-white text-lg font-semibold pointer-events-none">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-purple-600 via-purple-700 to-blue-500 text-white text-responsive-lg font-semibold pointer-events-none">
               วางไฟล์เพื่ออัพโหลดที่นี่
             </div>
           </div>
@@ -1893,7 +1893,7 @@ const AllFilesGalleryPage = () => {
               )}
 
               {/* Nested Folders Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5">
                 {displayFolders.length === 0 ? (
                   <div className="glass-card rounded-2xl p-4 sm:p-8 border-2 border-dashed border-purple-400/30 text-center col-span-full">
                     <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-xl sm:rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
@@ -1925,30 +1925,32 @@ const AllFilesGalleryPage = () => {
                             handleNestedFolderSelect(subFolder.id);
                           }
                         }}
-                        className={`group relative glass-card rounded-2xl p-5 border text-left transition-all duration-300 hover:scale-[1.03] cursor-pointer overflow-hidden animate-slide-up border-white/10 hover:border-purple-300/50 hover:shadow-lg hover:shadow-purple-500/20`}
+                        className={`group relative glass-card rounded-xl sm:rounded-2xl p-3 sm:p-5 border text-left transition-all duration-300 hover:scale-[1.03] cursor-pointer overflow-hidden animate-slide-up border-white/10 hover:border-purple-300/50 hover:shadow-lg hover:shadow-purple-500/20 ${isEditing ? 'min-w-[180px]' : ''}`}
                         style={{ animationDelay: `${index * 0.05}s` }}
                       >
                         {/* Background glow */}
                         <div className={`absolute inset-0 bg-gradient-to-br ${activeFolder.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
 
                         {isEditing ? (
-                          <div className="relative z-10 flex flex-col gap-3 h-full">
+                          <div className="relative z-10 flex flex-col gap-2 sm:gap-3 h-full">
                             <input
                               type="text"
                               value={editingSubFolderValue}
                               onChange={(e) =>
                                 setEditingSubFolderValue(e.target.value)
                               }
-                              className="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                              className="w-full min-w-[120px] px-3 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                               onClick={(e) => e.stopPropagation()}
+                              style={{ minWidth: '8ch' }}
+                              autoFocus
                             />
-                            <div className="flex gap-2">
+                            <div className="flex gap-1.5 sm:gap-2">
                               <button
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   handleSaveSubFolderName(subFolder.id);
                                 }}
-                                className="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white text-sm font-medium shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-all"
+                                className="flex-1 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white btn-text font-medium shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-all"
                               >
                                 บันทึก
                               </button>
@@ -1957,7 +1959,7 @@ const AllFilesGalleryPage = () => {
                                   event.stopPropagation();
                                   handleCancelEditSubFolder();
                                 }}
-                                className="flex-1 px-4 py-2 rounded-xl bg-white/10 text-purple-100 text-sm font-medium hover:bg-white/20 transition-all"
+                                className="flex-1 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-white/10 text-purple-100 btn-text font-medium hover:bg-white/20 transition-all"
                               >
                                 ยกเลิก
                               </button>
@@ -2071,9 +2073,9 @@ const AllFilesGalleryPage = () => {
                   </p>
                 </div>
                 {aiProcessingFiles.length > 0 && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-purple-500/20 rounded-xl">
-                    <RefreshCw className="w-4 h-4 text-purple-300 animate-spin" />
-                    <span className="text-sm text-purple-200">กำลังประมวลผล {aiProcessingFiles.length} ไฟล์...</span>
+                  <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-purple-500/20 rounded-xl">
+                    <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 text-purple-300 animate-spin" />
+                    <span className="text-responsive-sm text-purple-200">กำลังประมวลผล {aiProcessingFiles.length} ไฟล์...</span>
                   </div>
                 )}
               </div>
@@ -2113,7 +2115,7 @@ const AllFilesGalleryPage = () => {
               <div className="md:hidden mb-3 p-3 bg-white/5 rounded-xl space-y-3">
                 {/* View Mode */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-purple-200">มุมมอง:</span>
+                  <span className="text-responsive-sm text-purple-200">มุมมอง:</span>
                   <div className="flex items-center gap-1 p-1 bg-white/10 rounded-lg">
                     {[
                       { mode: "grid" as const, icon: Grid },
@@ -2136,11 +2138,11 @@ const AllFilesGalleryPage = () => {
 
                 {/* Type Filter */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-purple-200">ประเภท:</span>
+                  <span className="text-responsive-sm text-purple-200">ประเภท:</span>
                   <select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value as any)}
-                    className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm"
+                    className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-responsive-sm"
                   >
                     <option value="all" className="bg-slate-800">ทุกประเภท</option>
                     <option value="image" className="bg-slate-800">รูปภาพ</option>
@@ -2151,7 +2153,7 @@ const AllFilesGalleryPage = () => {
 
                 {/* Sort */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-purple-200">เรียงตาม:</span>
+                  <span className="text-responsive-sm text-purple-200">เรียงตาม:</span>
                   <select
                     value={`${sortBy}-${sortDirection}`}
                     onChange={(e) => {
@@ -2159,7 +2161,7 @@ const AllFilesGalleryPage = () => {
                       setSortBy(sort as any);
                       setSortDirection(dir as any);
                     }}
-                    className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm"
+                    className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-responsive-sm"
                   >
                     <option value="date-desc" className="bg-slate-800">ล่าสุด</option>
                     <option value="date-asc" className="bg-slate-800">เก่าสุด</option>
@@ -2172,26 +2174,26 @@ const AllFilesGalleryPage = () => {
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm ${showFavoritesOnly
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg btn-text ${showFavoritesOnly
                       ? "bg-gradient-to-r from-red-500 to-pink-500 text-white"
                       : "bg-white/10 text-purple-300"
                       }`}
                   >
-                    <Heart className={`w-4 h-4 ${showFavoritesOnly ? "fill-current" : ""}`} />
+                    <Heart className={`w-3.5 h-3.5 ${showFavoritesOnly ? "fill-current" : ""}`} />
                     โปรด
                   </button>
                   <button
                     onClick={selectAll}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white/10 text-purple-300 rounded-lg text-sm"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-white/10 text-purple-300 rounded-lg btn-text"
                   >
-                    <Check className="w-4 h-4" />
+                    <Check className="w-3.5 h-3.5" />
                     {selectedFiles.length > 0 ? 'ยกเลิก' : 'เลือก'}
                   </button>
                   <button
                     onClick={distributeFilesRandomly}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg text-sm"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg btn-text"
                   >
-                    <RefreshCw className="w-4 h-4" />
+                    <RefreshCw className="w-3.5 h-3.5" />
                     สุ่ม
                   </button>
                 </div>
@@ -2414,9 +2416,9 @@ const AllFilesGalleryPage = () => {
           {/* Mobile Upload Modal */}
           {showUploadModal && (
             <div className="fixed inset-0 z-50 bg-black/80 flex items-end md:items-center justify-center p-4">
-              <div className="w-full max-w-md bg-slate-900 rounded-t-3xl md:rounded-3xl p-6 space-y-4">
+              <div className="w-full max-w-md bg-slate-900 rounded-t-3xl md:rounded-3xl p-4 sm:p-6 space-y-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-white">อัพโหลดไฟล์</h3>
+                  <h3 className="text-responsive-xl font-bold text-white">อัพโหลดไฟล์</h3>
                   <button
                     onClick={() => setShowUploadModal(false)}
                     className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
@@ -2444,35 +2446,35 @@ const AllFilesGalleryPage = () => {
                 />
 
                 {/* Upload options */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 hover:border-purple-400/50 transition-all"
+                    className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 hover:border-purple-400/50 transition-all"
                   >
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                      <FolderOpen className="w-7 h-7 text-white" />
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                      <FolderOpen className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                     </div>
                     <div className="text-center">
-                      <p className="text-white font-semibold">เลือกไฟล์</p>
-                      <p className="text-xs text-purple-200/60">จากอุปกรณ์</p>
+                      <p className="text-white font-semibold text-responsive-base">เลือกไฟล์</p>
+                      <p className="text-responsive-xs text-purple-200/60">จากอุปกรณ์</p>
                     </div>
                   </button>
 
                   <button
                     onClick={() => cameraInputRef.current?.click()}
-                    className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 hover:border-cyan-400/50 transition-all"
+                    className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 hover:border-cyan-400/50 transition-all"
                   >
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
-                      <Camera className="w-7 h-7 text-white" />
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+                      <Camera className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                     </div>
                     <div className="text-center">
-                      <p className="text-white font-semibold">ถ่ายรูป/วิดีโอ</p>
-                      <p className="text-xs text-purple-200/60">จากกล้อง</p>
+                      <p className="text-white font-semibold text-responsive-base">ถ่ายรูป/วิดีโอ</p>
+                      <p className="text-responsive-xs text-purple-200/60">จากกล้อง</p>
                     </div>
                   </button>
                 </div>
 
-                <p className="text-center text-sm text-purple-200/50 pt-2">
+                <p className="text-center text-responsive-sm text-purple-200/50 pt-2">
                   รองรับไฟล์: รูปภาพ และ วิดีโอ
                 </p>
               </div>
@@ -2482,9 +2484,9 @@ const AllFilesGalleryPage = () => {
           {/* Share Modal */}
           {showShareModal && shareFileId && (
             <div className="fixed inset-0 z-50 bg-black/80 flex items-end md:items-center justify-center p-4">
-              <div className="w-full max-w-md bg-slate-900 rounded-t-3xl md:rounded-3xl p-6 space-y-4">
+              <div className="w-full max-w-md bg-slate-900 rounded-t-3xl md:rounded-3xl p-4 sm:p-6 space-y-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-white">แชร์ไฟล์</h3>
+                  <h3 className="text-responsive-xl font-bold text-white">แชร์ไฟล์</h3>
                   <button
                     onClick={() => {
                       setShowShareModal(false);
@@ -2496,39 +2498,39 @@ const AllFilesGalleryPage = () => {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-3 sm:gap-4">
                   {/* LINE Share */}
                   <button
                     onClick={() => shareFile(shareFileId, 'line')}
-                    className="flex flex-col items-center gap-2 p-4 rounded-xl line-share-btn transition-all"
+                    className="flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl line-share-btn transition-all"
                   >
-                    <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
-                      <Send className="w-6 h-6 text-green-500" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white flex items-center justify-center">
+                      <Send className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
                     </div>
-                    <span className="text-white text-sm font-medium">LINE</span>
+                    <span className="text-white text-responsive-sm font-medium">LINE</span>
                   </button>
 
                   {/* Copy Link */}
                   <button
                     onClick={() => shareFile(shareFileId, 'copy')}
-                    className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/10 hover:bg-white/20 transition-all"
+                    className="flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl bg-white/10 hover:bg-white/20 transition-all"
                   >
-                    <div className="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center">
-                      <Copy className="w-6 h-6 text-white" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-purple-500 flex items-center justify-center">
+                      <Copy className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
-                    <span className="text-white text-sm font-medium">คัดลอก</span>
+                    <span className="text-white text-responsive-sm font-medium">คัดลอก</span>
                   </button>
 
                   {/* Native Share */}
                   {'share' in navigator && (
                     <button
                       onClick={() => shareFile(shareFileId, 'native')}
-                      className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/10 hover:bg-white/20 transition-all"
+                      className="flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl bg-white/10 hover:bg-white/20 transition-all"
                     >
-                      <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center">
-                        <Share2 className="w-6 h-6 text-white" />
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-500 flex items-center justify-center">
+                        <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       </div>
-                      <span className="text-white text-sm font-medium">อื่นๆ</span>
+                      <span className="text-white text-responsive-sm font-medium">อื่นๆ</span>
                     </button>
                   )}
                 </div>
@@ -2542,12 +2544,12 @@ const AllFilesGalleryPage = () => {
               <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent" />
             </div>
           ) : filteredFiles.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-96 text-center">
-              <div className="p-6 rounded-full bg-purple-500/20 mb-4">
-                <FolderOpen className="w-16 h-16 text-purple-400" />
+            <div className="flex flex-col items-center justify-center h-64 sm:h-96 text-center">
+              <div className="p-4 sm:p-6 rounded-full bg-purple-500/20 mb-3 sm:mb-4">
+                <FolderOpen className="w-10 h-10 sm:w-16 sm:h-16 text-purple-400" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-2">ไม่พบไฟล์</h3>
-              <p className="text-purple-200/60">
+              <h3 className="text-responsive-2xl font-bold text-white mb-2">ไม่พบไฟล์</h3>
+              <p className="text-purple-200/60 text-responsive-sm">
                 ลองเปลี่ยนตัวกรองหรือคำค้นหาใหม่
               </p>
             </div>
